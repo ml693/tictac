@@ -14,7 +14,8 @@ class Computer
     private double[][] weights = new double[Position.HEIGHT][Position.WIDTH];
 
     private static final double WIN_REWARD = 1.0;
-    private static final double LOSS_REWARD = 0.0;
+    private static final double LOSS_REWARD = -1.0;
+    private static final double DRAW_REWARD = 0.0;
 
     private static final double LAMBDA = 0.98;
 
@@ -56,6 +57,7 @@ class Computer
     {
         Position adjustedPosition = new Position(position);
         if (!position.whiteMovedLast()) {
+	    // Swapping black and white pieces
             for (int row = 0; row < Position.HEIGHT; row++) {
                 for (int col = 0; col < Position.WIDTH; col++) {
                     if (position.board[row][col] == Position.X) {
@@ -69,13 +71,17 @@ class Computer
         }
 
         int gameResult = adjustedPosition.gameResult();
-        if (gameResult == Position.WHITE_WON) {
-            return WIN_REWARD;
-        }
-        if (gameResult == Position.BLACK_WON) {
-            return LOSS_REWARD;
-        }
-        return 1 / (1 + functionF(dotProduct(weights, position)));
+	switch (adjustedPosition.gameResult()) {
+		case Position.WHITE_WON:
+			return WIN_REWARD;
+		case Position.BLACK_WON:
+			return LOSS_REWARD;
+		case Position.DRAW:
+			return DRAW_REWARD;
+		case Position.UNKNOWN:
+			return 1 / (1 + functionF(dotProduct(weights, adjustedPosition)));
+		default: throw new RuntimeException("Unexpected game result");
+	}
     }
 
     private static double dotProduct(double[][] weights, Position position) {
@@ -92,7 +98,7 @@ class Computer
     {
         ArrayList<Position> positions = currentPosition.nextPositions();
         Position nextPosition = null;
-        double bestScore = -1.0;
+        double bestScore = LOSS_REWARD;
         for (Position position : positions) {
             double score = evaluate(position);
 	    if (score > bestScore) {

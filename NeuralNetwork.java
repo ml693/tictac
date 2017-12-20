@@ -131,7 +131,7 @@ class NeuralNetwork
                 parameters.bias[h]);
         }
 
-        return activation(dotProduct(parameters.hiddenLayer, parameters.hiddenLayer) + 
+        return activation(dotProduct(hiddenLayer, parameters.hiddenLayer) + 
             parameters.hiddenBias);
     }
 
@@ -144,19 +144,33 @@ class NeuralNetwork
     }
 
     Parameters computeGradient(Position position) {
-        Parameters gradient = new Parameters();
-        gradient.hiddenBias = apply(position);
+        double[] board = getBoard(position);
 
+        double[] innerFunction = new double[NeuralNetwork.HIDDEN_LAYER_SIZE];
+        double[] innerDerivative = new double[NeuralNetwork.HIDDEN_LAYER_SIZE];
         for (int i = 0; i < NeuralNetwork.HIDDEN_LAYER_SIZE; i++) {
-           gradient.hiddenLayer[i] = gradient.hiddenBias * 
-                activation(dotProduct(parameters.firstLayer[i], getBoard(position)) + 
-                           gradient.bias[i]);
-           for (int j = 0; j < Position.WIDTH * Position.HEIGHT; j++) {
-               gradient.firstLayer[i][j] = gradient.hiddenLayer[i] * 
-                   position.board[j / Position.WIDTH][j % Position.WIDTH];
-           }
+            double passToFunction = dotProduct(board, parameters.firstLayer[i]) + 
+                parameters.bias[i];
+            innerFunction[i] = activation(passToFunction);
+            innerDerivative[i] = activationDerivative(passToFunction);
         }
 
+        double sumToPass = parameters.hiddenBias;
+        for (int i = 0; i < NeuralNetwork.HIDDEN_LAYER_SIZE; i++) {
+            sumToPass += innerFunction[i] * parameters.hiddenLayer[i];
+        }
+
+        Parameters gradient = new Parameters();
+        gradient.hiddenBias = activationDerivative(sumToPass);
+        for (int i = 0; i < NeuralNetwork.HIDDEN_LAYER_SIZE; i++) {
+            gradient.bias[i] = gradient.hiddenBias *
+                parameters.hiddenLayer[i] * innerDerivative[i];
+            gradient.hiddenLayer[i] = gradient.hiddenBias * innerFunction[i];
+            for (int j = 0; j < Position.HEIGHT * Position.WIDTH; j++) {
+                gradient.firstLayer[i][j] = gradient.bias[i] * board[j];
+            }
+
+        }
         return gradient;
     }
 

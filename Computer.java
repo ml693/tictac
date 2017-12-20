@@ -11,7 +11,6 @@ import java.util.Scanner;
 
 class Computer
 {
-
     private static final double WIN_REWARD = 1.0;
     private static final double DRAW_REWARD = 1.0;
     private static final double LOSS_REWARD = 0.0;
@@ -21,7 +20,7 @@ class Computer
     private static final double RANDOM_MOVE_PROBABILITY = 0.1;
 
     private static final int TRAINING_AMOUNT = 1000;
-    
+
     Random random = new Random();
 
     NeuralNetwork neuralNetwork;
@@ -40,7 +39,7 @@ class Computer
     {
         Position adjustedPosition = new Position(position);
         if (!position.whiteMovedLast()) {
-	    // Swapping black and white pieces
+            // Swapping black and white pieces
             for (int row = 0; row < Position.HEIGHT; row++) {
                 for (int col = 0; col < Position.WIDTH; col++) {
                     if (position.board[row][col] == Position.X) {
@@ -53,17 +52,17 @@ class Computer
             }
         }
 
-	switch (adjustedPosition.gameResult()) {
-		case Position.WHITE_WON:
-			return WIN_REWARD;
-		case Position.BLACK_WON:
-			return LOSS_REWARD;
-		case Position.DRAW:
-			return DRAW_REWARD;
-		case Position.UNKNOWN:
-			return neuralNetwork.apply(adjustedPosition);
-		default: throw new RuntimeException("Unexpected game result");
-	}
+        switch (adjustedPosition.gameResult()) {
+        case Position.WHITE_WON:
+            return WIN_REWARD;
+        case Position.BLACK_WON:
+            return LOSS_REWARD;
+        case Position.DRAW:
+            return DRAW_REWARD;
+        case Position.UNKNOWN:
+            return neuralNetwork.apply(adjustedPosition);
+        default: throw new RuntimeException("Unexpected game result");
+        }
     }
 
     public Position makeBestMove(Position currentPosition)
@@ -73,12 +72,12 @@ class Computer
         double bestScore = LOSS_REWARD;
         for (Position position : positions) {
             double score = evaluate(position);
-	    if (score > bestScore) {
+            if (score > bestScore) {
                 nextPosition = position;
                 bestScore = score;
             }
         }
-    	return nextPosition;
+        return nextPosition;
     }
 
     public Position makeRandomMove(Position currentPosition)
@@ -93,7 +92,7 @@ class Computer
         for (int i = 0; i < TRAINING_AMOUNT; i++) {
             System.out.println("Iteration nr. " + i);
 
-	    Computer white = new Computer(new File("./tictac/newWeights.txt"));
+            Computer white = new Computer(new File("./tictac/newWeights.txt"));
             Computer black = new Computer(new File("./tictac/newWeights.txt"));
             ArrayList<Position> history = new ArrayList<Position>();
             Position position = new Position();
@@ -108,9 +107,9 @@ class Computer
                     nextEvaluation = WIN_REWARD;
                 } else {
                     position = black.makeBestMove(position);
-		    nextEvaluation = white.evaluate(position);
+                    nextEvaluation = white.evaluate(position);
                 }
-                white.neuralNetwork.adjustWeights(nextEvaluation, currentEvaluation, history);
+                white.neuralNetwork.adjustWeights(LAMBDA, nextEvaluation - currentEvaluation, history);
             }
 
             white.neuralNetwork.parametersToFile(new File("./tictac/newWeights.txt"));

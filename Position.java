@@ -7,9 +7,9 @@ class Position
     private static final int FIVE = 5;
 
     // Indicates what's placed on the square.
-    public static final int EMPTY = 0;
-    public static final int X = 1;
-    public static final int O = -1;
+    public static final int EMPTY = 1;
+    public static final int X = 2;
+    public static final int O = 3;
 
     public static final int WHITE_WON = 0;
     public static final int BLACK_WON = 1;
@@ -21,7 +21,13 @@ class Position
     public static final int HEIGHT = 25;
     int board[][] = new int[WIDTH][HEIGHT];
 
-    Position() {}
+    Position() {
+        for (int row = 0; row < HEIGHT; row++) {
+            for (int col = 0; col < WIDTH; col++) {
+                board[row][col] = Position.EMPTY;
+            }
+        }
+    }
 
     Position(Position position)
     {
@@ -30,6 +36,29 @@ class Position
                 board[row][col] = position.board[row][col];
             }
         }
+    }
+
+    void print() {
+        System.out.println("Position:");
+        for (int row = 0; row < HEIGHT; row++) {
+            for (int col = 0; col < WIDTH; col++) {
+                switch (board[row][col]) {
+                    case EMPTY:
+                        System.out.print("_");
+                        break;
+                    case X:
+                        System.out.print("X");
+                        break;
+                    case O:
+                        System.out.print("O");
+                        break;
+                    default:
+                        throw new RuntimeException("Wrong board");
+                }
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 
     // White plays with x pieces, black plays with o pieces.

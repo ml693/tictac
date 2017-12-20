@@ -16,7 +16,7 @@ class Play
     private static Computer computer = new Computer();
     private static Position position = new Position();
     private static JButton[][] buttons = new
-        JButton[Position.HEIGHT][Position.WIDTH];
+    JButton[Position.HEIGHT][Position.WIDTH];
 
     public static void colorBoard(Position position)
     {
@@ -46,8 +46,8 @@ class Play
         panel.setLayout(new GridLayout(Position.HEIGHT, Position.WIDTH));
         for (int r = 0; r < Position.HEIGHT; r++) {
             for (int c = 0; c < Position.WIDTH; c++) {
-		final int row = r;
-		final int col = c;
+                final int row = r;
+                final int col = c;
                 JButton button = new JButton();
                 buttons[row][col] = button;
                 button.addActionListener(new ActionListener() {

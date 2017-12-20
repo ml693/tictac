@@ -11,7 +11,8 @@ class NeuralNetwork
 {
     private static final int HIDDEN_LAYER_SIZE = 30;
 
-    private class Parameters {
+    private class Parameters
+    {
         private double[][] firstLayer =
             new double[HIDDEN_LAYER_SIZE][Position.HEIGHT * Position.WIDTH];
         private double[] bias = new double[HIDDEN_LAYER_SIZE];
@@ -19,30 +20,32 @@ class NeuralNetwork
         private double hiddenBias = 1.0;
 
         Parameters() {}
-        Parameters(File file) {
+        Parameters(File file)
+        {
             try {
-            Scanner scanner = new Scanner(file);
-            for (int h = 0; h < HIDDEN_LAYER_SIZE; h++) {
-                for (int i = 0; i < Position.HEIGHT * Position.WIDTH; i++) {
-                    firstLayer[h][i] = scanner.nextDouble();
+                Scanner scanner = new Scanner(file);
+                for (int h = 0; h < HIDDEN_LAYER_SIZE; h++) {
+                    for (int i = 0; i < Position.HEIGHT * Position.WIDTH; i++) {
+                        firstLayer[h][i] = scanner.nextDouble();
+                    }
                 }
-            }
-            
-            for (int h = 0; h < HIDDEN_LAYER_SIZE; h++) {
+
+                for (int h = 0; h < HIDDEN_LAYER_SIZE; h++) {
                     bias[h] = scanner.nextDouble();
-            }
-            for (int h = 0; h < HIDDEN_LAYER_SIZE; h++) {
+                }
+                for (int h = 0; h < HIDDEN_LAYER_SIZE; h++) {
                     hiddenLayer[h] = scanner.nextDouble();
-            }
-            hiddenBias = scanner.nextDouble();
-            scanner.close(); 
+                }
+                hiddenBias = scanner.nextDouble();
+                scanner.close();
             } catch (FileNotFoundException exception) {
                 throw new RuntimeException(exception);
             }
-        
+
         }
 
-        void toFile(File file) {
+        void toFile(File file)
+        {
             try {
                 FileWriter writer = new FileWriter(file);
 
@@ -66,7 +69,8 @@ class NeuralNetwork
             }
         }
 
-        void multiply(double d) {
+        void multiply(double d)
+        {
             for (int i = 0; i < HIDDEN_LAYER_SIZE; i++) {
                 for (int j = 0; j < Position.HEIGHT * Position.WIDTH; j++) {
                     firstLayer[i][j] *= d;
@@ -77,7 +81,8 @@ class NeuralNetwork
             hiddenBias *= d;
         }
 
-        void add(Parameters p) {
+        void add(Parameters p)
+        {
             for (int i = 0; i < HIDDEN_LAYER_SIZE; i++) {
                 for (int j = 0; j < Position.HEIGHT * Position.WIDTH; j++) {
                     firstLayer[i][j] += p.firstLayer[i][j];
@@ -91,22 +96,27 @@ class NeuralNetwork
 
     Parameters parameters;
 
-    public NeuralNetwork(File parametersFile) {
+    public NeuralNetwork(File parametersFile)
+    {
         parameters = new Parameters(parametersFile);
     }
 
-    void parametersToFile(File file) {
-       parameters.toFile(file);
+    void parametersToFile(File file)
+    {
+        parameters.toFile(file);
     }
 
-    private static double activation(double x) {
+    private static double activation(double x)
+    {
         return x > 0 ? -1 / (x + 2) + 1 : 1 / (2 - x);
     }
-    private static double activationDerivative(double x) {
+    private static double activationDerivative(double x)
+    {
         return x > 0 ? 1 / ((x + 2) * (x + 2)) : 1 / ((2 - x) * (2 - x));
     }
 
-    private static double dotProduct(double[] vector1, double[] vector2) {
+    private static double dotProduct(double[] vector1, double[] vector2)
+    {
         double product = 0;
         for (double d1 : vector1) {
             for (double d2 : vector2) {
@@ -127,15 +137,16 @@ class NeuralNetwork
 
         double[] hiddenLayer = new double[HIDDEN_LAYER_SIZE];
         for (int h = 0; h < HIDDEN_LAYER_SIZE; h++) {
-            hiddenLayer[h] = activation(dotProduct(parameters.firstLayer[h], board) + 
-                parameters.bias[h]);
+            hiddenLayer[h] = activation(dotProduct(parameters.firstLayer[h], board) +
+                                        parameters.bias[h]);
         }
 
-        return activation(dotProduct(hiddenLayer, parameters.hiddenLayer) + 
-            parameters.hiddenBias);
+        return activation(dotProduct(hiddenLayer, parameters.hiddenLayer) +
+                          parameters.hiddenBias);
     }
 
-    private double[] getBoard(Position position) {
+    private double[] getBoard(Position position)
+    {
         double[] board = new double[Position.WIDTH * Position.HEIGHT];
         for (int i = 0; i < board.length; i++) {
             board[i] = ((double) position.board[i / Position.WIDTH][i % Position.WIDTH]);
@@ -143,14 +154,15 @@ class NeuralNetwork
         return board;
     }
 
-    Parameters computeGradient(Position position) {
+    Parameters computeGradient(Position position)
+    {
         double[] board = getBoard(position);
 
         double[] innerFunction = new double[NeuralNetwork.HIDDEN_LAYER_SIZE];
         double[] innerDerivative = new double[NeuralNetwork.HIDDEN_LAYER_SIZE];
         for (int i = 0; i < NeuralNetwork.HIDDEN_LAYER_SIZE; i++) {
-            double passToFunction = dotProduct(board, parameters.firstLayer[i]) + 
-                parameters.bias[i];
+            double passToFunction = dotProduct(board, parameters.firstLayer[i]) +
+                                    parameters.bias[i];
             innerFunction[i] = activation(passToFunction);
             innerDerivative[i] = activationDerivative(passToFunction);
         }
@@ -164,7 +176,7 @@ class NeuralNetwork
         gradient.hiddenBias = activationDerivative(sumToPass);
         for (int i = 0; i < NeuralNetwork.HIDDEN_LAYER_SIZE; i++) {
             gradient.bias[i] = gradient.hiddenBias *
-                parameters.hiddenLayer[i] * innerDerivative[i];
+                               parameters.hiddenLayer[i] * innerDerivative[i];
             gradient.hiddenLayer[i] = gradient.hiddenBias * innerFunction[i];
             for (int j = 0; j < Position.HEIGHT * Position.WIDTH; j++) {
                 gradient.firstLayer[i][j] = gradient.bias[i] * board[j];
@@ -175,7 +187,8 @@ class NeuralNetwork
     }
 
     void adjustWeights(double lambda, double evaluationDifference,
-        ArrayList<Position> history) {
+                       ArrayList<Position> history)
+    {
         double lambdaToI = 1;
         for (int i = 0; i < history.size(); i++) {
             int k = history.size() - 1 - i;

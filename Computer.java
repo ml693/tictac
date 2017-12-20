@@ -53,8 +53,7 @@ class Computer
         }
 
         switch (adjustedPosition.gameResult()) {
-        case Position.WHITE_WON:
-            return WIN_REWARD;
+        case Position.WHITE_WON: return WIN_REWARD;
         case Position.BLACK_WON:
             return LOSS_REWARD;
         case Position.DRAW:
@@ -109,7 +108,8 @@ class Computer
                     position = black.makeBestMove(position);
                     nextEvaluation = white.evaluate(position);
                 }
-                white.neuralNetwork.adjustWeights(LAMBDA, nextEvaluation - currentEvaluation, history);
+                white.neuralNetwork.adjustWeights(LAMBDA, nextEvaluation - currentEvaluation,
+                                                  history);
             }
 
             white.neuralNetwork.parametersToFile(new File("./tictac/newWeights.txt"));

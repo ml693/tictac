@@ -21,7 +21,8 @@ class Position
     public static final int HEIGHT = 25;
     int board[][] = new int[WIDTH][HEIGHT];
 
-    Position() {
+    Position()
+    {
         for (int row = 0; row < HEIGHT; row++) {
             for (int col = 0; col < WIDTH; col++) {
                 board[row][col] = Position.EMPTY;
@@ -38,22 +39,23 @@ class Position
         }
     }
 
-    void print() {
+    void print()
+    {
         System.out.println("Position:");
         for (int row = 0; row < HEIGHT; row++) {
             for (int col = 0; col < WIDTH; col++) {
                 switch (board[row][col]) {
-                    case EMPTY:
-                        System.out.print("_");
-                        break;
-                    case X:
-                        System.out.print("X");
-                        break;
-                    case O:
-                        System.out.print("O");
-                        break;
-                    default:
-                        throw new RuntimeException("Wrong board");
+                case EMPTY:
+                    System.out.print("_");
+                    break;
+                case X:
+                    System.out.print("X");
+                    break;
+                case O:
+                    System.out.print("O");
+                    break;
+                default:
+                    throw new RuntimeException("Wrong board");
                 }
             }
             System.out.println();

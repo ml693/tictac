@@ -36,14 +36,6 @@ class Computer
         this(new File("./tictac/NeuralNetwork.txt"));
     }
 
-    private static double activation(double x) {
-        return x > 0 ? -1 / (x + 2) + 1 : 1 / (2 - x);
-    }
-
-    private static double activationDerivative(double x) {
-        return x > 0 ? 1 / ((x + 2) * (x + 2)) : 1 / ((2 - x) * (2 - x));
-    }
-
     public double evaluate(Position position)
     {
         Position adjustedPosition = new Position(position);
